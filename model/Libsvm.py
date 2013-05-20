@@ -6,18 +6,50 @@ Created on May 18, 2013
 import sys
 import libsvm.python.svmutil as svmutil
 
-def train( train_file_name ): 
-    y, x = svmutil.svm_read_problem(train_file_name)
-    model = svmutil.svm_train(y, x, "-c 8 -g 0.3125")
+## ======================================================================================
+## some settings
+## ======================================================================================
+C = 8
+gamma = 0.3125
+option = "-c %d -g %lf" % ( C, gamma )
+
+
+## ====================================================================================== 
+## public method
+## ======================================================================================
+
+def train( y, X ):
+    model = svmutil.svm_train(y, X, option)
+    return model
+
+def trainByFile( train_file_name ): 
+    y, X = svmutil.svm_read_problem(train_file_name)
+    model = train(y, X)
     return model
     
-def predict( test_file_name, model ):
-    y1, x1 = svmutil.svm_read_problem( test_file_name )
-    p_label, p_acc, p_val = svmutil.svm_predict(y1, x1, model)
+def predict( f_vector, model ):
+    X = [ f_vector ]
+    y = [ 0 ]
+    p_label, p_acc, p_val = svmutil.svm_predict(y, X, model)
+    return p_label
+
+def predictByFile( test_file_name, model ):
+    y, X = svmutil.svm_read_problem( test_file_name )
+    p_label, p_acc, p_val = svmutil.svm_predict(y, X, model)
     print len(p_label)
+    
+def saveModel( model ):
+    svmutil.svm_save_model( 'model.file', model )
+
+def loadModel():
+    try:
+        model = svmutil.svm_load_model( 'model.file' )
+    except:
+        print "Warning: You haven't training for a model. Please call the train() function."
+    return model
 
 # For model testing    
 if __name__ == '__main__':
     #print sys.argv[1]
-    model = train( sys.argv[1] )
-    predict( sys.argv[2], model )
+    model = trainByFile( sys.argv[1] )
+    predictByFile( sys.argv[2], model )
