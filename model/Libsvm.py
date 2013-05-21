@@ -1,3 +1,4 @@
+# coding=utf8
 '''
 Created on May 18, 2013
 
@@ -39,11 +40,11 @@ def predictByFile( test_file_name, model ):
     print len(p_label)
     
 def saveModel( model ):
-    svmutil.svm_save_model( 'model.file', model )
+    svmutil.svm_save_model( 'data/model.file', model )
 
 def loadModel():
     try:
-        model = svmutil.svm_load_model( 'model.file' )
+        model = svmutil.svm_load_model( 'data/model.file' )
     except:
         print "Warning: You haven't training for a model. Please call the train() function."
     return model

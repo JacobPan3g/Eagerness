@@ -1,0 +1,55 @@
+# coding=utf8
+'''
+Created on May 20, 2013
+
+@author: jacob
+'''
+
+from weibo import APIClient
+from re import split
+import re
+import urllib,httplib
+import webbrowser
+from urllib import urlretrieve
+import codecs
+
+
+APP_KEY = "861058711"
+APP_SECRET = "242b3fc47e1833dd62528ebaef4573de"
+#APP_KEY = "1419571836"
+#APP_SECRET = "2cac5bf9d6294ebaff56ca8dc6f323f7"
+CALLBACK_URL = "http://api.weibo.com/oauth2/default.html"
+ACCOUNT = "zhenjian3g@qq.com"#帐号
+PASSWORD = "jacobpan2889184"#密码
+
+def authentication( usr, pwd ):
+    #get url
+    client = APIClient(app_key = APP_KEY,app_secret = APP_SECRET,redirect_uri=CALLBACK_URL)
+    url = client.get_authorize_url()
+    
+    #get code
+    conn = httplib.HTTPSConnection('api.weibo.com')
+    postdata = urllib.urlencode({'client_id':APP_KEY,'response_type':'code','redirect_uri':CALLBACK_URL,'action':'submit','userId':usr,'passwd':pwd,'isLoginSina':0,'from':'','regCallback':'','state':'','ticket':'','withOfficalFlag':0})
+    conn.request('POST','/oauth2/authorize',postdata,{'Referer':url,'Content-Type': 'application/x-www-form-urlencoded'})
+    res = conn.getresponse()
+    location = res.getheader('location')
+    print location
+    code = location.split('=')[1]
+    conn.close()
+
+    #get client        
+    r = client.request_access_token(code)
+    access_token = r.access_token 
+    expires_in = r.expires_in 
+    client.set_access_token(access_token, expires_in)
+    i = 1
+    
+    name=u"振坚_Jacob"
+    print name
+    alltext = client.statuses__user_timeline(screen_name=name,count=100,page=i)
+    print alltext
+    
+# For model testing
+if __name__ == '__main__':
+    authentication( ACCOUNT, PASSWORD )
+    

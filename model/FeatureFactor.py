@@ -1,3 +1,4 @@
+# coding=utf8
 '''
 FeatureFactor
 Created the feature space which contained the feature index and training set
@@ -7,13 +8,14 @@ Created on May 20, 2013
 @author: jacob
 '''
 import WordSeg
+import pickle
 
 ## ======================================================================================
 ## some settings
 ## ======================================================================================
 kw_each_label = 100
 kw_each_predict = 200
-num_of_labels = 2
+num_of_labels = 5
 
 
 
@@ -43,6 +45,7 @@ def getFeature( sentence, f_index ):
 #            y:list
 #            X:matrix
 def getFeatureSpace( train_data_dir, labels, sample_num=100 ):
+    num_of_labels = len( labels )
     kws = list()                # list =all key words
     train_set = list()
     for label in labels:
@@ -54,6 +57,7 @@ def getFeatureSpace( train_data_dir, labels, sample_num=100 ):
     #print len(train_set)
     f_index = dict( zip( kws, range( len(kws) ) ) )
     y, X = getTrainMatrix( train_set, f_index )
+    saveDealedData( y, X )
     return f_index, y, X
     
 
@@ -102,6 +106,14 @@ def getTrainMatrix( train_set, f_index ):
             X.append( f_vector )
             y.append( idx )
     return y, X
+    
+def saveDealedData( y, X ):
+    fobj = open( "data/y", 'w' )
+    pickle.dump(y, fobj)
+    fobj.close()
+    fobj = open( "data/X", 'w' )
+    pickle.dump(X, fobj)
+    fobj.close()
     
 
 # For model testing
